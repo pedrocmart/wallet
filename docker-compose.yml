@@ -1,0 +1,38 @@
+version: '3'
+services:
+    db:
+        # platform: linux/x86_64
+        container_name: crud_go_db
+        image: arm64v8/mysql:oracle
+        environment: 
+            - MYSQL_DATABASE=wallet
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=mysql
+            - MYSQL_PASSWORD=root
+            - DATABASE_HOST=db
+            - LC_ALL=C.UTF-8
+            - LANG=C.UTF-8
+        ports:
+            - "3307:3306"
+    inmem:
+        image: redis
+    api:
+        build: .
+        restart: on-failure
+        depends_on: 
+            - db
+        links:
+            - db
+        environment: 
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_NAME=wallet
+            - DB_USER=root
+            - DB_PASS=root
+            - REDIS_HOST=inmem
+            - REDIS_PORT=6379
+        ports:
+            - 5001:5001
+
+
+
